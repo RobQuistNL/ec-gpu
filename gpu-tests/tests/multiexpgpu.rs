@@ -5,7 +5,6 @@ use std::time::Instant;
 
 use blstrs::Bls12;
 use ec_gpu::GpuName;
-use ec_gpu_gen::multiexp_cpu::{multiexp_cpu, FullDensity, QueryDensity, SourceBuilder};
 use ec_gpu_gen::{
     multiexp::MultiexpKernel, program, rust_gpu_tools::Device, threadpool::Worker, EcError,
 };
@@ -35,8 +34,9 @@ where
 #[test]
 fn gpu_multiexp_consistency() {
     fil_logger::maybe_init();
-    const MAX_LOG_D: usize = 16;
+    const MAX_LOG_D: usize = 22;
     const START_LOG_D: usize = 10;
+    const REPEAT: i32 = 100;
     let devices = Device::all();
     let programs = devices
         .iter()
@@ -53,36 +53,29 @@ fn gpu_multiexp_consistency() {
         .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
         .collect::<Vec<_>>();
 
-    for log_d in START_LOG_D..=MAX_LOG_D {
-        let g = Arc::new(bases.clone());
 
-        let samples = 1 << log_d;
-        println!("Testing Multiexp for {} elements...", samples);
+    for repetition in 0..=REPEAT {
+        println!("Repetition {}", repetition);
+        for log_d in START_LOG_D..=MAX_LOG_D {
+            let g = Arc::new(bases.clone());
 
-        let v = Arc::new(
-            (0..samples)
-                .map(|_| <Bls12 as Engine>::Fr::random(&mut rng).to_repr())
-                .collect::<Vec<_>>(),
-        );
+            let samples = 1 << log_d;
+            println!("Testing Multiexp for {} elements...", samples);
 
-        let mut now = Instant::now();
-        let gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
-        let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-        println!("GPU took {}ms.", gpu_dur);
+            let v = Arc::new(
+                (0..samples)
+                    .map(|_| <Bls12 as Engine>::Fr::random(&mut rng).to_repr())
+                    .collect::<Vec<_>>(),
+            );
 
-        now = Instant::now();
-        let cpu = multiexp_cpu(&pool, (g.clone(), 0), FullDensity, v.clone())
-            .wait()
-            .unwrap();
-        let cpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-        println!("CPU took {}ms.", cpu_dur);
+            let now = Instant::now();
+            let _gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
+            let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
+            println!("GPU took {}ms.", gpu_dur);
 
-        println!("Speedup: x{}", cpu_dur as f32 / gpu_dur as f32);
+            println!("============================");
 
-        assert_eq!(cpu, gpu);
-
-        println!("============================");
-
-        bases = [bases.clone(), bases.clone()].concat();
+            bases = [bases.clone(), bases.clone()].concat();
+        }
     }
 }
