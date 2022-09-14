@@ -69,8 +69,8 @@ fn gpu_multiexp_consistency() {
                     .collect::<Vec<_>>(),
             );
 
-            let mut now = Instant::now();
-            let gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
+            let now = Instant::now();
+            let _gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
             println!("GPU took {}ms.", gpu_dur);
 
