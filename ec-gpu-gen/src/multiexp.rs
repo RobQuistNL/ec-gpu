@@ -439,7 +439,8 @@ mod tests {
             .collect::<Vec<_>>();
 
         println!("Expanding bases 16x...");
-        for _ in 0..=16 {
+        for i in 0..=16 {
+            println!("Duplication {}...", i);
             bases = [bases.clone(), bases.clone()].concat();
         }
 
