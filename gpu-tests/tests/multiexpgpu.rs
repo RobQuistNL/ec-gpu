@@ -36,7 +36,7 @@ where
 fn gpu_multiexp_consistency() {
     fil_logger::maybe_init();
     const MAX_LOG_D: usize = 28;
-    const START_LOG_D: usize = 20;
+    const START_LOG_D: usize = 24;
     const REPEAT: i32 = 100;
     let devices = Device::all();
     let programs = devices
@@ -50,6 +50,7 @@ fn gpu_multiexp_consistency() {
 
     let mut rng = rand::thread_rng();
 
+    println!("Builing bases...");
     let mut bases = (0..(1 << START_LOG_D))
             .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
             .collect::<Vec<_>>();
@@ -61,7 +62,7 @@ fn gpu_multiexp_consistency() {
             let g = Arc::new(bases.clone());
 
             let samples = 1 << log_d;
-            println!("Testing Multiexp for {} elements...", samples);
+            println!("Building {} elements for Arc samples...", samples);
 
             let v = Arc::new(
                 (0..samples)
@@ -69,6 +70,7 @@ fn gpu_multiexp_consistency() {
                     .collect::<Vec<_>>(),
             );
 
+            println!("Running Multiexp on GPU...", samples);
             for internal_rep in 0..=REPEAT {
                 let now = Instant::now();
                 let _gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
