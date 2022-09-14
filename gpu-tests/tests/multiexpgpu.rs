@@ -70,7 +70,7 @@ fn gpu_multiexp_consistency() {
                     .collect::<Vec<_>>(),
             );
 
-            println!("Running Multiexp on GPU...", samples);
+            println!("Running Multiexp on GPU...");
             for internal_rep in 0..=REPEAT {
                 let now = Instant::now();
                 let _gpu = multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
