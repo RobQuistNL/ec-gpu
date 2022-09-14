@@ -5,6 +5,7 @@ use std::time::Instant;
 
 use blstrs::Bls12;
 use ec_gpu::GpuName;
+use ec_gpu_gen::multiexp_cpu::{multiexp_cpu, FullDensity, QueryDensity, SourceBuilder};
 use ec_gpu_gen::{
     multiexp::MultiexpKernel, program, rust_gpu_tools::Device, threadpool::Worker, EcError,
 };
