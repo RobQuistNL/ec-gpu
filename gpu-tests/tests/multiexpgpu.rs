@@ -56,7 +56,7 @@ fn gpu_multiexp_consistency() {
             .collect::<Vec<_>>();
 
     println!("Expanding bases...");
-    for copy_base in 0..8 {
+    for _copy_base in 0..8 {
         bases = [bases.clone(), bases.clone()].concat();
     }
 
