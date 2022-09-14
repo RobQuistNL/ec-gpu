@@ -424,8 +424,8 @@ mod tests {
 
     #[test]
     fn gpu_multiexp_consistency() {
-        const MAX_LOG_D: usize = 24;
-        const START_LOG_D: usize = 16;
+        const MAX_LOG_D: usize = 26;
+        const START_LOG_D: usize = 13;
         let devices = Device::all();
         let mut kern =
             MultiexpKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
@@ -433,10 +433,17 @@ mod tests {
 
         let mut rng = rand::thread_rng();
 
+        println!("Generating bases...");
         let mut bases = (0..(1 << START_LOG_D))
             .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
             .collect::<Vec<_>>();
 
+        println!("Expanding bases 16x...");
+        for _ in 0..=16 {
+            bases = [bases.clone(), bases.clone()].concat();
+        }
+
+        println!("Starting ARC building...");
         for log_d in START_LOG_D..=MAX_LOG_D {
             let g = Arc::new(bases.clone());
 
@@ -449,10 +456,12 @@ mod tests {
                     .collect::<Vec<_>>(),
             );
 
-            let now = Instant::now();
-            multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
-            let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("GPU took {}ms.", gpu_dur);
+            for _ in 0..=50 {
+                let now = Instant::now();
+                multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
+                let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
+                println!("GPU took {}ms.", gpu_dur);
+            }
 
 //             now = Instant::now();
 //             let cpu =
@@ -467,7 +476,6 @@ mod tests {
 
             println!("============================");
 
-            bases = [bases.clone(), bases.clone()].concat();
         }
     }
 }
