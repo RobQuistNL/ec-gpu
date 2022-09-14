@@ -31,3 +31,7 @@ ec-gpu-gen = { path = "../ec-gpu-gen" }
 default = ["cuda", "opencl"]
 cuda = ["blstrs/gpu", "ec-gpu-gen/cuda"]
 opencl = ["blstrs/gpu", "ec-gpu-gen/opencl"]
+
+[[bench]]
+name = "multiexp"
+harness = false
