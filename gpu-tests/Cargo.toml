@@ -1,3 +1,6 @@
+# NOTE vmx 2022-07-07: Using the `__private_bench` feature of `blstrs` is just temporarily until
+# https://github.com/zkcrypto/group/pull/29 is fixed. Then we won't need the exports of `Fp` and
+# `Fp2` any more.
 [package]
 name = "gpu-tests"
 version = "0.1.0"
@@ -8,40 +11,23 @@ repository = "https://github.com/filecoin-project/ec-gen"
 license = "MIT/Apache-2.0"
 publish = false
 
-[dependencies]
-bitvec = "0.22.3"
-crossbeam-channel = "0.5.1"
-ec-gpu = "0.1.0"
-ff = { version = "0.12.0", default-features = false }
-group = "0.12.0"
-log = "0.4.14"
-num_cpus = "1.13.0"
-once_cell = "1.8.0"
-pairing = "0.22.0"
-rayon = "1.5.1"
-rust-gpu-tools = { version = "0.6.0", default-features = false, optional = true }
-temp-env = "0.2.0"
-thiserror = "1.0.30"
-yastl = "0.1.2"
-
 [dev-dependencies]
-blstrs = { version = "0.5.0", features = ["gpu"] }
+blstrs = { version = "0.6.0", features = ["__private_bench"] }
+criterion = "0.3.6"
+ec-gpu = "0.2"
+ec-gpu-gen = { path = "../ec-gpu-gen", default-features = false }
+ff = { version = "0.12.0", default-features = false }
+fil_logger = "0.1.6"
+group = "0.12.0"
+pairing = "0.22.0"
 rand = "0.8"
-lazy_static = "1.2"
-tempfile = "3.2.0"
-rand_core = "0.6.3"
-rand_xorshift = "0.3.0"
+rayon = "1.5.3"
 
 [build-dependencies]
-blstrs = "0.5.0"
-ec-gpu = "0.1.0"
-execute = "0.2.9"
-hex = "0.4"
-sha2 = "0.10"
+blstrs = { version = "0.6.0", features = ["__private_bench"] }
+ec-gpu-gen = { path = "../ec-gpu-gen" }
 
 [features]
-default = ["cuda", "fft", "multiexp", "opencl"]
-cuda = ["rust-gpu-tools/cuda"]
-opencl = ["rust-gpu-tools/opencl"]
-fft = []
-multiexp = []
+default = ["cuda", "opencl"]
+cuda = ["blstrs/gpu", "ec-gpu-gen/cuda"]
+opencl = ["blstrs/gpu", "ec-gpu-gen/opencl"]
