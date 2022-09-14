@@ -38,7 +38,6 @@ fn gpu_multiexp_consistency() {
     const MAX_LOG_D: usize = 28;
     const START_LOG_D: usize = 26;
     const REPEAT: i32 = 100;
-    const EXPAND: i32 = 12;
 
     let devices = Device::all();
     let programs = devices
@@ -53,12 +52,12 @@ fn gpu_multiexp_consistency() {
     let mut rng = rand::thread_rng();
 
     println!("Builing bases...");
-    let mut bases = (0..(1 << START_LOG_D-EXPAND))
+    let mut bases = (0..(1 << START_LOG_D-12))
             .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
             .collect::<Vec<_>>();
 
-    println!("Expanding bases {} times...", EXPAND);
-    for _copy_base in 0..EXPAND {
+    println!("Expanding bases {} times...", 12);
+    for _copy_base in 0..12 {
         bases = [bases.clone(), bases.clone()].concat();
     }
 
