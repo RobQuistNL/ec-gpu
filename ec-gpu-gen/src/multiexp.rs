@@ -400,7 +400,7 @@ mod tests {
     use ff::Field;
     use group::Curve;
 
-    use crate::multiexp_cpu::{multiexp_cpu, FullDensity, QueryDensity, SourceBuilder};
+    use crate::multiexp_cpu::{FullDensity, QueryDensity, SourceBuilder};
 
     fn multiexp_gpu<Q, D, G, E, S>(
         pool: &Worker,
