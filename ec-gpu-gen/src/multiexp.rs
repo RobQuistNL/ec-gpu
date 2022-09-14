@@ -424,8 +424,8 @@ mod tests {
 
     #[test]
     fn gpu_multiexp_consistency() {
-        const MAX_LOG_D: usize = 24;
-        const START_LOG_D: usize = 14;
+        const MAX_LOG_D: usize = 16;
+        const START_LOG_D: usize = 10;
         let devices = Device::all();
         let mut kern =
             MultiexpKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
@@ -450,8 +450,7 @@ mod tests {
             );
 
             let now = Instant::now();
-            let gpu =
-                multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
+            multiexp_gpu(&pool, (g.clone(), 0), FullDensity, v.clone(), &mut kern).unwrap();
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
             println!("GPU took {}ms.", gpu_dur);
 
