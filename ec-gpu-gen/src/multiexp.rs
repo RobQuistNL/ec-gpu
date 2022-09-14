@@ -424,8 +424,8 @@ mod tests {
 
     #[test]
     fn gpu_multiexp_consistency() {
-        const MAX_LOG_D: usize = 26;
-        const START_LOG_D: usize = 13;
+        const MAX_LOG_D: usize = 28;
+        const START_LOG_D: usize = 12;
         let devices = Device::all();
         let mut kern =
             MultiexpKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
@@ -439,8 +439,8 @@ mod tests {
             .collect::<Vec<_>>();
 
         println!("Expanding bases 16x...");
-        for i in 0..=16 {
-            println!("Duplication {}...", i);
+        for i in 0..=15 {
+            println!("Duplication {}...", i+1);
             bases = [bases.clone(), bases.clone()].concat();
         }
 
