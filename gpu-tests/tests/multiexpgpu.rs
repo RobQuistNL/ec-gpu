@@ -75,7 +75,7 @@ fn gpu_multiexp_consistency() {
             println!("GPU took {}ms.", gpu_dur);
 
             println!("============================");
-            if (repetition == 0) {
+            if repetition == 0 {
                 bases = [bases.clone(), bases.clone()].concat();
             }
         }
