@@ -50,13 +50,11 @@ fn gpu_multiexp_consistency() {
 
     let mut rng = rand::thread_rng();
 
-
-
+    let mut bases = (0..(1 << START_LOG_D))
+            .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
+            .collect::<Vec<_>>();
 
     for repetition in 0..=REPEAT {
-        let mut bases = (0..(1 << START_LOG_D))
-                .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
-                .collect::<Vec<_>>();
 
         println!("Repetition {}", repetition);
         for log_d in START_LOG_D..=MAX_LOG_D {
@@ -77,8 +75,9 @@ fn gpu_multiexp_consistency() {
             println!("GPU took {}ms.", gpu_dur);
 
             println!("============================");
-
-            bases = [bases.clone(), bases.clone()].concat();
+            if (repetition == 0) {
+                bases = [bases.clone(), bases.clone()].concat();
+            }
         }
     }
 }
