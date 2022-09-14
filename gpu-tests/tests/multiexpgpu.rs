@@ -51,9 +51,14 @@ fn gpu_multiexp_consistency() {
     let mut rng = rand::thread_rng();
 
     println!("Builing bases...");
-    let mut bases = (0..(1 << START_LOG_D))
+    let mut bases = (0..(1 << START_LOG_D-8))
             .map(|_| <Bls12 as Engine>::G1::random(&mut rng).to_affine())
             .collect::<Vec<_>>();
+
+    println!("Expanding bases...");
+    for copy_base in 0..8 {
+        bases = [bases.clone(), bases.clone()].concat();
+    }
 
     for repetition in 0..=REPEAT {
 
