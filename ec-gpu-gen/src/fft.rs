@@ -279,7 +279,7 @@ mod tests {
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
 
-        for log_d in 24..=29 {
+        for log_d in 1..=29 {
             let d = 1 << log_d;
 
             println!("{:?} Generating coefficients for {} elements (runsize  1 << {})...", chrono::offset::Local::now(), d, log_d);
@@ -288,16 +288,28 @@ mod tests {
             let mut v2_coeffs = v1_coeffs.clone();
             let v2_omega = v1_omega;
 
-            println!("{:?} Starting FFT on GPU...", chrono::offset::Local::now());
+
 
             let now = Instant::now();
-            for i in 1..=10 {
+            let rp = 10000;
+            if log_d > 12 {
+                rp = 1000;
+            }
+            if log_d > 16 {
+                rp = 100;
+            }
+            if log_d > 20 {
+                rp = 10;
+            }
+
+            println!("{:?} Starting FFT on GPU for {} reps...", chrono::offset::Local::now(), rp);
+            for i in 1..=rp {
                 println!("{:?} Run {}...", chrono::offset::Local::now(), i);
                 kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
                     .expect("GPU FFT failed!");
             }
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("{:?} GPU took {}ms. for 10 cycles", chrono::offset::Local::now(), gpu_dur);
+            println!("{:?} GPU took {}ms. for {} cycles", chrono::offset::Local::now(), gpu_dur, rp);
 
 //             now = Instant::now();
 //             if log_d <= log_threads {
@@ -339,7 +351,7 @@ mod tests {
             let v22_omega = v12_omega;
             let v23_omega = v13_omega;
 
-            println!("Testing FFT3 for {} elements, 100 times...", d);
+            println!("Testing FFT3 for {} elements (1 << {}), 100 times...", d, log_d);
 
             let mut now = Instant::now();
             for _ in 1..100 {
