@@ -282,7 +282,7 @@ mod tests {
         for log_d in 24..=29 {
             let d = 1 << log_d;
 
-            println!("{:?} Generating coefficients for {} elements...", chrono::offset::Local::now(), d);
+            println!("{:?} Generating coefficients for {} elements (runsize  1 << {})...", chrono::offset::Local::now(), d, log_d);
             let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
             let v1_omega = omega::<Bls12>(v1_coeffs.len());
             let mut v2_coeffs = v1_coeffs.clone();
