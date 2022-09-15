@@ -281,12 +281,13 @@ mod tests {
         for log_d in 1..=29 {
             let d = 1 << log_d;
 
+            println!("Generating coefficients for {} elements...", d);
             let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
             let v1_omega = omega::<Bls12>(v1_coeffs.len());
             let mut v2_coeffs = v1_coeffs.clone();
             let v2_omega = v1_omega;
 
-            println!("Testing FFT for {} elements...", d);
+            println!("Starting FFT on GPU...");
 
             let now = Instant::now();
             for _ in 1..=100 {
