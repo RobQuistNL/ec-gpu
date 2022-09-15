@@ -278,7 +278,7 @@ mod tests {
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
 
-        for log_d in 1..=29 {
+        for log_d in 24..=29 {
             let d = 1 << log_d;
 
             println!("Generating coefficients for {} elements...", d);
