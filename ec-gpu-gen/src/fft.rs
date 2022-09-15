@@ -281,21 +281,22 @@ mod tests {
         for log_d in 24..=29 {
             let d = 1 << log_d;
 
-            println!("Generating coefficients for {} elements...", d);
+            println!("{:?} Generating coefficients for {} elements...", chrono::offset::Local::now(), d);
             let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
             let v1_omega = omega::<Bls12>(v1_coeffs.len());
             let mut v2_coeffs = v1_coeffs.clone();
             let v2_omega = v1_omega;
 
-            println!("Starting FFT on GPU...");
+            println!("{:?} Starting FFT on GPU...", chrono::offset::Local::now());
 
             let now = Instant::now();
-            for _ in 1..=10 {
+            for i in 1..=10 {
+                println!("{:?} Run {}...", chrono::offset::Local::now(), i);
                 kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
                     .expect("GPU FFT failed!");
             }
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("GPU took {}ms. for 10 cycles", gpu_dur);
+            println!("{:?} GPU took {}ms. for 10 cycles", chrono::offset::Local::now(), gpu_dur);
 
 //             now = Instant::now();
 //             if log_d <= log_threads {
