@@ -291,7 +291,7 @@ mod tests {
 
 
             let now = Instant::now();
-            let rp = 10000;
+            let mut rp = 10000;
             if log_d > 12 {
                 rp = 1000;
             }
