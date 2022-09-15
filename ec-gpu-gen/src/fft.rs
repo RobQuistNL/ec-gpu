@@ -289,10 +289,12 @@ mod tests {
             println!("Testing FFT for {} elements...", d);
 
             let now = Instant::now();
-            kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
-                .expect("GPU FFT failed!");
+            for _ in 1..=100 {
+                kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
+                    .expect("GPU FFT failed!");
+            }
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("GPU took {}ms.", gpu_dur);
+            println!("GPU took {}ms. for 10 cycles", gpu_dur);
 
 //             now = Instant::now();
 //             if log_d <= log_threads {
