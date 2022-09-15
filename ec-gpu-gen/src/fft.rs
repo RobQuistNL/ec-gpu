@@ -304,7 +304,10 @@ mod tests {
 
             println!("{:?} Starting FFT on GPU for {} reps...", chrono::offset::Local::now(), rp);
             for i in 1..=rp {
-                println!("{:?} Run {}...", chrono::offset::Local::now(), i);
+            if (rp < 200) {
+            println!("{:?} Run {}...", chrono::offset::Local::now(), i);
+            }
+
                 kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
                     .expect("GPU FFT failed!");
             }
