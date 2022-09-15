@@ -319,8 +319,6 @@ mod tests {
     pub fn gpu_fft_many_consistency() {
         let mut rng = rand::thread_rng();
 
-        let worker = Worker::new();
-        let log_threads = worker.log_num_threads();
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
 
@@ -341,36 +339,20 @@ mod tests {
             let v22_omega = v12_omega;
             let v23_omega = v13_omega;
 
-            println!("Testing FFT3 for {} elements...", d);
+            println!("Testing FFT3 for {} elements, 100 times...", d);
 
             let mut now = Instant::now();
-            kern.radix_fft_many(
-                &mut [&mut v11_coeffs, &mut v12_coeffs, &mut v13_coeffs],
-                &[v11_omega, v12_omega, v13_omega],
-                &[log_d, log_d, log_d],
-            )
-            .expect("GPU FFT failed!");
+            for _ in 1..100 {
+                kern.radix_fft_many(
+                    &mut [&mut v11_coeffs, &mut v12_coeffs, &mut v13_coeffs],
+                    &[v11_omega, v12_omega, v13_omega],
+                    &[log_d, log_d, log_d],
+                )
+                .expect("GPU FFT failed!");
+            }
+
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
             println!("GPU took {}ms.", gpu_dur);
-
-            now = Instant::now();
-            if log_d <= log_threads {
-                serial_fft::<Bls12>(&mut v21_coeffs, &v21_omega, log_d);
-                serial_fft::<Bls12>(&mut v22_coeffs, &v22_omega, log_d);
-                serial_fft::<Bls12>(&mut v23_coeffs, &v23_omega, log_d);
-            } else {
-                parallel_fft::<Bls12>(&mut v21_coeffs, &worker, &v21_omega, log_d, log_threads);
-                parallel_fft::<Bls12>(&mut v22_coeffs, &worker, &v22_omega, log_d, log_threads);
-                parallel_fft::<Bls12>(&mut v23_coeffs, &worker, &v23_omega, log_d, log_threads);
-            }
-            let cpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("CPU ({} cores) took {}ms.", 1 << log_threads, cpu_dur);
-
-            println!("Speedup: x{}", cpu_dur as f32 / gpu_dur as f32);
-
-            assert!(v11_coeffs == v21_coeffs);
-            assert!(v12_coeffs == v22_coeffs);
-            assert!(v13_coeffs == v23_coeffs);
 
             println!("============================");
         }
