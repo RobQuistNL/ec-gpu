@@ -1,3 +1,4 @@
+use chrono;
 use std::cmp;
 use std::ops::MulAssign;
 use std::sync::{Arc, RwLock};
@@ -255,7 +256,6 @@ mod tests {
     use blstrs::{Bls12, Scalar as Fr};
     use ff::{Field, PrimeField};
     use std::time::Instant;
-    use chrono;
 
     use crate::fft_cpu::{parallel_fft, serial_fft};
     use crate::threadpool::Worker;
