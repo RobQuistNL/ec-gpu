@@ -288,7 +288,7 @@ mod tests {
 
             println!("Testing FFT for {} elements...", d);
 
-            //let mut now = Instant::now();
+            let now = Instant::now();
             kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
                 .expect("GPU FFT failed!");
             let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
