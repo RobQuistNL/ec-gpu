@@ -290,7 +290,7 @@ mod tests {
             println!("Starting FFT on GPU...");
 
             let now = Instant::now();
-            for _ in 1..=100 {
+            for _ in 1..=10 {
                 kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
                     .expect("GPU FFT failed!");
             }
