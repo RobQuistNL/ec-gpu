@@ -1,4 +1,3 @@
-use chrono;
 use std::cmp;
 use std::ops::MulAssign;
 use std::sync::{Arc, RwLock};
@@ -253,6 +252,7 @@ where
 mod tests {
     use super::*;
 
+    use chrono;
     use blstrs::{Bls12, Scalar as Fr};
     use ff::{Field, PrimeField};
     use std::time::Instant;
