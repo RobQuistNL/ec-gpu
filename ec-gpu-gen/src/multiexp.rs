@@ -477,6 +477,15 @@ mod tests {
 
             println!("============================");
 
+/*
+GPU_DEVICE_ORDINAL=2 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture &
+GPU_DEVICE_ORDINAL=3 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture &
+GPU_DEVICE_ORDINAL=5 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture &
+GPU_DEVICE_ORDINAL=6 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture &
+GPU_DEVICE_ORDINAL=7 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture &
+GPU_DEVICE_ORDINAL=7 cargo test --release --no-default-features --features opencl,multiexp --tests gpu_multiexp_consistency -- --nocapture
+*/
+
         }
     }
 }
