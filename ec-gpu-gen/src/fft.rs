@@ -257,8 +257,6 @@ mod tests {
     use ff::{Field, PrimeField};
     use std::time::Instant;
 
-    use crate::threadpool::Worker;
-
     fn omega<E: Engine>(num_coeffs: usize) -> E::Fr {
         // Compute omega, the 2^exp primitive root of unity
         let exp = (num_coeffs as f32).log2().floor() as u32;
