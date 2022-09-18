@@ -257,7 +257,6 @@ mod tests {
     use ff::{Field, PrimeField};
     use std::time::Instant;
 
-    use crate::fft_cpu::{parallel_fft, serial_fft};
     use crate::threadpool::Worker;
 
     fn omega<E: Engine>(num_coeffs: usize) -> E::Fr {
@@ -275,7 +274,7 @@ mod tests {
         let mut rng = rand::thread_rng();
 
         let worker = Worker::new();
-        let log_threads = worker.log_num_threads();
+        //let log_threads = worker.log_num_threads();
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
 
@@ -285,8 +284,8 @@ mod tests {
             println!("{:?} Generating coefficients for {} elements (runsize  1 << {})...", chrono::offset::Local::now(), d, log_d);
             let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
             let v1_omega = omega::<Bls12>(v1_coeffs.len());
-            let mut v2_coeffs = v1_coeffs.clone();
-            let v2_omega = v1_omega;
+            //let mut v2_coeffs = v1_coeffs.clone();
+            //let v2_omega = v1_omega;
 
 
 
@@ -304,7 +303,7 @@ mod tests {
 
             println!("{:?} Starting FFT on GPU for {} reps...", chrono::offset::Local::now(), rp);
             for i in 1..=rp {
-            if (rp < 200) {
+            if rp < 200 {
             println!("{:?} Run {}...", chrono::offset::Local::now(), i);
             }
 
@@ -347,16 +346,16 @@ mod tests {
             let v12_omega = omega::<Bls12>(v12_coeffs.len());
             let v13_omega = omega::<Bls12>(v13_coeffs.len());
 
-            let mut v21_coeffs = v11_coeffs.clone();
-            let mut v22_coeffs = v12_coeffs.clone();
-            let mut v23_coeffs = v13_coeffs.clone();
-            let v21_omega = v11_omega;
-            let v22_omega = v12_omega;
-            let v23_omega = v13_omega;
+            //let mut v21_coeffs = v11_coeffs.clone();
+            //let mut v22_coeffs = v12_coeffs.clone();
+//             let mut v23_coeffs = v13_coeffs.clone();
+//             let v21_omega = v11_omega;
+//             let v22_omega = v12_omega;
+//             let v23_omega = v13_omega;
 
             println!("Testing FFT3 for {} elements (1 << {}), 100 times...", d, log_d);
 
-            let mut now = Instant::now();
+            let now = Instant::now();
             for _ in 1..100 {
                 kern.radix_fft_many(
                     &mut [&mut v11_coeffs, &mut v12_coeffs, &mut v13_coeffs],
