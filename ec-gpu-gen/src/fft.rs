@@ -276,54 +276,56 @@ mod tests {
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
 
-        for log_d in 1..=29 {
-            let d = 1 << log_d;
+        while true {
+            for log_d in 1..=29 {
+                let d = 1 << log_d;
 
-            println!("{:?} Generating coefficients for {} elements (runsize  1 << {})...", chrono::offset::Local::now(), d, log_d);
-            let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
-            let v1_omega = omega::<Bls12>(v1_coeffs.len());
-            //let mut v2_coeffs = v1_coeffs.clone();
-            //let v2_omega = v1_omega;
+                println!("{:?} Generating coefficients for {} elements (runsize  1 << {})...", chrono::offset::Local::now(), d, log_d);
+                let mut v1_coeffs = (0..d).map(|_| Fr::random(&mut rng)).collect::<Vec<_>>();
+                let v1_omega = omega::<Bls12>(v1_coeffs.len());
+                //let mut v2_coeffs = v1_coeffs.clone();
+                //let v2_omega = v1_omega;
 
 
 
-            let now = Instant::now();
-            let mut rp = 10000;
-            if log_d > 12 {
-                rp = 1000;
+                let now = Instant::now();
+                let mut rp = 10000;
+                if log_d > 12 {
+                    rp = 1000;
+                }
+                if log_d > 16 {
+                    rp = 100;
+                }
+                if log_d > 20 {
+                    rp = 10;
+                }
+
+                println!("{:?} Starting FFT on GPU for {} reps...", chrono::offset::Local::now(), rp);
+                for i in 1..=rp {
+                if rp < 200 {
+                println!("{:?} Run {}...", chrono::offset::Local::now(), i);
+                }
+
+                    kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
+                        .expect("GPU FFT failed!");
+                }
+                let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
+                println!("{:?} GPU took {}ms. for {} cycles", chrono::offset::Local::now(), gpu_dur, rp);
+
+    //             now = Instant::now();
+    //             if log_d <= log_threads {
+    //                 serial_fft::<Bls12>(&mut v2_coeffs, &v2_omega, log_d);
+    //             } else {
+    //                 parallel_fft::<Bls12>(&mut v2_coeffs, &worker, &v2_omega, log_d, log_threads);
+    //             }
+    //             let cpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
+    //             println!("CPU ({} cores) took {}ms.", 1 << log_threads, cpu_dur);
+    //
+    //             println!("Speedup: x{}", cpu_dur as f32 / gpu_dur as f32);
+
+                //assert!(v1_coeffs == v2_coeffs);
+                println!("============================");
             }
-            if log_d > 16 {
-                rp = 100;
-            }
-            if log_d > 20 {
-                rp = 10;
-            }
-
-            println!("{:?} Starting FFT on GPU for {} reps...", chrono::offset::Local::now(), rp);
-            for i in 1..=rp {
-            if rp < 200 {
-            println!("{:?} Run {}...", chrono::offset::Local::now(), i);
-            }
-
-                kern.radix_fft_many(&mut [&mut v1_coeffs], &[v1_omega], &[log_d])
-                    .expect("GPU FFT failed!");
-            }
-            let gpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-            println!("{:?} GPU took {}ms. for {} cycles", chrono::offset::Local::now(), gpu_dur, rp);
-
-//             now = Instant::now();
-//             if log_d <= log_threads {
-//                 serial_fft::<Bls12>(&mut v2_coeffs, &v2_omega, log_d);
-//             } else {
-//                 parallel_fft::<Bls12>(&mut v2_coeffs, &worker, &v2_omega, log_d, log_threads);
-//             }
-//             let cpu_dur = now.elapsed().as_secs() * 1000 + now.elapsed().subsec_millis() as u64;
-//             println!("CPU ({} cores) took {}ms.", 1 << log_threads, cpu_dur);
-//
-//             println!("Speedup: x{}", cpu_dur as f32 / gpu_dur as f32);
-
-            //assert!(v1_coeffs == v2_coeffs);
-            println!("============================");
         }
     }
 
