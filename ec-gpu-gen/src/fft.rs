@@ -273,7 +273,7 @@ mod tests {
     pub fn gpu_fft_consistency() {
         let mut rng = rand::thread_rng();
 
-        let worker = Worker::new();
+        //let worker = Worker::new();
         //let log_threads = worker.log_num_threads();
         let devices = Device::all();
         let mut kern = FftKernel::<Bls12>::create(&devices).expect("Cannot initialize kernel!");
